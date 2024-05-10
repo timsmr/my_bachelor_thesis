@@ -18,7 +18,7 @@ pip install -r requirements.txt
 
 Download model artifact:
 ```bash
-gdown https://drive.google.com/file/d/1obu1ou0-BcRruiGWY9-jT-lo7L-DhYIi/view?usp=sharing
+gdown 1obu1ou0-BcRruiGWY9-jT-lo7L-DhYIi
 ```
 
 ## Usage
@@ -55,7 +55,7 @@ poetry install
 
 Скачайте артифакт модели:
 ```bash
-gdown https://drive.google.com/file/d/1obu1ou0-BcRruiGWY9-jT-lo7L-DhYIi/view?usp=sharing
+gdown 1obu1ou0-BcRruiGWY9-jT-lo7L-DhYIi
 ```
 
 ## Запуск
