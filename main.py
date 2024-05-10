@@ -138,7 +138,7 @@ def process_video(model: any, cap: any, ms_per_frame: float, detected_time: date
         # process intermediate data
         is_covered, bread_amount, tray_id = process_inter_data(is_covered, bread_amount, tray_id, start, finish,
                                                                model, detected_time, roi)
-        logger.info(f"{count_frames} has been processed")
+
         if count_frames == ms_per_frame:
             count_frames = 0
             detected_time += timedelta(seconds=1)
@@ -165,10 +165,11 @@ def run(model, tray_id: int) -> None:
             continue
 
         cap = cv2.VideoCapture(f"{SettingModel.VIDEO_PATH}/{video}")
-        fps = cap.get(cv2.CAP_PROP_FPS)
-        ms_per_frame = fps
 
-        logger.info(f'FPS: {fps}')
+        fps = cap.get(cv2.CAP_PROP_FPS)
+        if fps > 60:
+            fps = 24
+        ms_per_frame = fps
 
         tray_id = process_video(model, cap, ms_per_frame,
                                 detected_time, is_covered, bread_amount, tray_id)
@@ -211,7 +212,7 @@ def check_camera_availability():
 
 
 def download_video():
-    command = f'ffmpeg -hide_banner -y -loglevel error -rtsp_transport tcp -use_wallclock_as_timestamps 1 -i {SettingModel.RTSP_URL} -vcodec copy -acodec copy -t 300 -f segment -segment_format mkv -segment_time 300 -strftime 1 {SettingModel.VIDEO_PATH}/%Y-%m-%dT%H-%M-%S.mkv < /dev/null'
+    command = f'ffmpeg -hide_banner -y -loglevel error -rtsp_transport tcp -use_wallclock_as_timestamps 1 -i {SettingModel.RTSP_URL} -vcodec copy -acodec copy -t 300 -f segment -r 24 -segment_format mkv -segment_time 300 -strftime 1 {SettingModel.VIDEO_PATH}/%Y-%m-%dT%H-%M-%S.mkv < /dev/null'
 
     try:
         subprocess.check_output(command, shell=True)
