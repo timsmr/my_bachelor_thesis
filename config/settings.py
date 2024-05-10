@@ -8,7 +8,7 @@ load_dotenv()
 class SettingModel:
     MODEL_PATH = "best.pt"
     VIDEO_PATH = "videos"
-    RTSP_URL = os.getenv('RTSP_URL', "rtsp://77.232.139.186:8554/live.stream")
+    RTSP_URL = os.getenv('RTSP_URL', "rtsp://localhost:8554/live.stream")
 
 
 class SettingsPostgres:

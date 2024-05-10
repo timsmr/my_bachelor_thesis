@@ -37,6 +37,8 @@ services:
       - postgres
     networks:
       - pg-net
+    env_file:
+      - path: .env
 
   metabase:
     image: metabase/metabase
