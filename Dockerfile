@@ -25,6 +25,7 @@ RUN pip install poetry && \
 # Копируем исходный код
 COPY . .
 
+RUN mkdir videos
 
 # Команда для запуска консольного приложения
 CMD ["poetry", "run", "python", "main.py"]
