@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "stargate"
+name = "thesis"
 version = "0.1.0"
-description = "Basketball-project"
-authors = ["Igor Leschenko"]
+description = "My Backelor Thesis"
+authors = ["Timur Smirnov <smrtim17@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -33,6 +33,3 @@ ignore = ["D1", "D203", "D213", "FA102", "ANN101"]
 no-lines-before = ["standard-library", "local-folder"]
 known-third-party = []
 known-local-folder = ["whole_app"]
-
-[tool.ruff.extend-per-file-ignores]
-"stargate/tests/*.py" = ["ANN401", "S101", "S311"]
