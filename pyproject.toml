@@ -1,35 +1,42 @@
 [tool.poetry]
 name = "thesis"
 version = "0.1.0"
-description = "My Backelor Thesis"
+description = "My Bachelor Thesis"
 authors = ["Timur Smirnov <smrtim17@gmail.com>"]
-readme = "README.md"
+packages = [{ include = "src"}]
 
 [tool.poetry.dependencies]
-python = "^3.10"
-python-dotenv = "^1.0.0"
-ruff = "^0.1.7"
-loguru = "^0.7.2"
-numpy = "^1.26.2"
+python = "~3.11"
+structlog = "^24.2.0"
+pydantic-settings = "^2.2.1"
+scipy = "^1.13.1"
 opencv-python = "^4.8.1.78"
 ultralytics = "^8.0.227"
 sqlalchemy = "^2.0.23"
-psycopg2-binary = "^2.9.9"
 
+[tool.poetry.group.dev.dependencies]
+black = "^22.3.0"
+pre-commit = "*"
+isort = "^5.12.0"
+flake8 = "^3.9.0"
+jupyter = "*"
+matplotlib = "*"
+seaborn = "*"
+mypy = "^1.8.0"
+nbqa = "^0.5.9"
+autoflake = "*"
+pydocstyle = "^6.1.1"
+mlflow = "^2.5.0"
+
+[tool.nbqa.mutate]
+black = 1
+autoflake = 1
+isort = 1
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-venv-dir = "venv"
-
-[tool.ruff]
-fix = true
-unsafe-fixes = true
-line-length = 120
-select = ["ALL"]
-ignore = ["D1", "D203", "D213", "FA102", "ANN101"]
-
-[tool.ruff.isort]
-no-lines-before = ["standard-library", "local-folder"]
-known-third-party = []
-known-local-folder = ["whole_app"]
