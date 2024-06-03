@@ -6,9 +6,11 @@ from .config import DBConfig
 
 config = DBConfig()
 
-engine = create_engine(f"postgresql://{config.db_username}:\
+engine = create_engine(
+    f"postgresql://{config.db_username}:\
 {config.db_password}@{config.db_host}:\
-{config.db_port}/{config.db_name}")
+{config.db_port}/{config.db_name}"
+)
 Session = sessionmaker(bind=engine)
 session = Session()
 

@@ -5,10 +5,11 @@ class Helpers:
     """
     Helper functions.
     """
+
     @staticmethod
     def add_default_product() -> None:
         """
-        Add default product data to the DB. 
+        Add default product data to the DB.
         """
         products = [
             {

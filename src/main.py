@@ -1,7 +1,7 @@
 import threading
 
-from services.video_processer import VideoProcesser
 from services.video_loader import VideoLoader
+from services.video_processer import VideoProcesser
 
 video_loader = VideoLoader()
 video_processer = VideoProcesser()

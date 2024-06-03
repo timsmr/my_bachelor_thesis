@@ -35,12 +35,23 @@ def get_start_data() -> tuple[int, int, datetime]:
     tray_id = db.query(func.max(model.Result.tray_id)).scalar()
     tray_id = tray_id + 1 if tray_id else 1
 
-    last_change_sku_time = db.query(model.Result).order_by(desc(model.Result.last_change_sku_time)).first()
-    last_change_sku_time = last_change_sku_time.last_change_sku_time if last_change_sku_time else datetime.now()
+    last_change_sku_time = (
+        db.query(model.Result).order_by(desc(model.Result.last_change_sku_time)).first()
+    )
+    last_change_sku_time = (
+        last_change_sku_time.last_change_sku_time
+        if last_change_sku_time
+        else datetime.now()
+    )
 
-    last_change_sku = db.query(model.Result.sku_id).filter(
-        model.Result.last_change_sku_time == last_change_sku_time,
-    ).order_by(desc(model.Result.created)).first()
+    last_change_sku = (
+        db.query(model.Result.sku_id)
+        .filter(
+            model.Result.last_change_sku_time == last_change_sku_time,
+        )
+        .order_by(desc(model.Result.created))
+        .first()
+    )
 
     last_change_sku = last_change_sku.sku_id if last_change_sku else 1
 

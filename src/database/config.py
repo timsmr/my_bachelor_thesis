@@ -12,5 +12,5 @@ class DBConfig(BaseSettings):
     db_host: str = Field("postgres", env="DB_HOST")
 
     class Config:
-        env_file = './.env'
-        extra = 'allow'
+        env_file = "./.env"
+        extra = "allow"

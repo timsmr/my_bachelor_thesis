@@ -1,8 +1,9 @@
-import cv2
 import subprocess
 
-from .config import Config
+import cv2
 import structlog
+
+from .config import Config
 
 logger = structlog.get_logger()
 
@@ -33,10 +34,10 @@ class VideoLoader:
         """
         Download video using ffmpeg tool and subprocess library.
         """
-        command = f'ffmpeg -hide_banner -y -loglevel error -rtsp_transport \
+        command = f"ffmpeg -hide_banner -y -loglevel error -rtsp_transport \
             tcp -use_wallclock_as_timestamps 1 -i {self.config.rtsp_url} \
             -vcodec copy -acodec copy -t 300 -f segment -r 24 \
-            -segment_format mkv -segment_time {self.config.video_length_s} -strftime 1 {self.config.video_path}/%Y-%m-%dT%H-%M-%S.mkv < /dev/null'
+            -segment_format mkv -segment_time {self.config.video_length_s} -strftime 1 {self.config.video_path}/%Y-%m-%dT%H-%M-%S.mkv < /dev/null"
 
         try:
             subprocess.check_output(command, shell=True)
