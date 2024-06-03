@@ -4,7 +4,7 @@ from datetime import datetime
 from sqlalchemy import Boolean, Column, DateTime, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 
-from database import Base, engine
+from database.database import Base, engine
 
 
 class Result(Base):

@@ -13,6 +13,7 @@ scipy = "^1.13.1"
 opencv-python = "^4.8.1.78"
 ultralytics = "^8.0.227"
 sqlalchemy = "^2.0.23"
+psycopg2-binary = "^2.9.9"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.3.0"

@@ -10,8 +10,7 @@ from ultralytics import YOLO
 
 from database.crud import Crud
 from helpers.helpers import Helpers
-
-from .config import Config
+from services.config import Config
 
 logger = structlog.get_logger()
 

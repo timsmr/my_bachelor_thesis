@@ -3,7 +3,7 @@ import subprocess
 import cv2
 import structlog
 
-from .config import Config
+from services.config import Config
 
 logger = structlog.get_logger()
 

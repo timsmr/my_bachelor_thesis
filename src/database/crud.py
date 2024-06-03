@@ -7,7 +7,6 @@ from database.database import session as db
 
 
 class Crud:
-
     @staticmethod
     def add_product(name: str, sku: int, id: int) -> None:
         order_obj = db.query(model.Product).filter_by(sku=sku).first()
@@ -39,8 +38,9 @@ class Crud:
         tray_id = tray_id + 1 if tray_id else 1
 
         last_change_sku_time = (
-            db.query(model.Result).order_by(
-                desc(model.Result.last_change_sku_time)).first()
+            db.query(model.Result)
+            .order_by(desc(model.Result.last_change_sku_time))
+            .first()
         )
         last_change_sku_time = (
             last_change_sku_time.last_change_sku_time
