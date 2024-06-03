@@ -1,7 +1,6 @@
 import json
 import os
 from datetime import datetime, timedelta
-from typing import Any
 
 import cv2
 import numpy as np
@@ -9,7 +8,7 @@ import structlog
 from scipy import stats as st
 from ultralytics import YOLO
 
-from database.crud import add_result_detect, get_start_data
+from database.crud import Crud
 from helpers.helpers import Helpers
 
 from .config import Config
@@ -25,6 +24,7 @@ class VideoProcesser:
     def __init__(self) -> None:
         self.config = Config()
         self.helpers = Helpers()
+        self.crud = Crud()
 
     def send_data(
         self, tray_id: int, bread_amount: list[int], detected_time: datetime
@@ -60,19 +60,19 @@ class VideoProcesser:
                     "last_change_sku_time": data["last_change_sku_time"],
                     "detected_time": detected_time,
                 }
-                add_result_detect(content)
+                self.crud.add_result_detect(content)
 
     def process_inter_data(
         self,
         is_covered: int,
         bread_amount: list[list[int]],
         tray_id: int,
-        start_roi: np.ndarray[Any],
-        finish_roi: np.ndarray[Any],
+        start_roi: np.ndarray,
+        finish_roi: np.ndarray,
         model: YOLO,
         detected_time: datetime,
-        roi: np.ndarray[Any],
-    ) -> tuple[int, list, int]:
+        roi: np.ndarray,
+    ) -> tuple[int, list[list[int]], int]:
         """
         Process video frame and get model predictions.
 
@@ -84,7 +84,8 @@ class VideoProcesser:
         :param model: the YOLO model
         :param detected_time: time the tray appeared
         :param roi: the main roi
-        :return is_covered: the amount of subsequent frames in which the tray was present
+        :return is_covered: the amount of subsequent
+                            frames in which the tray was present
         :return bread_amount: the amount of predicted SKU
         :return tray_id: id of the current tray
         """
@@ -111,14 +112,14 @@ class VideoProcesser:
                 [],
                 [],
             ]:
-                bread_amount = [
+                bread_amount_mode = [
                     int(st.mode(i).mode) if len(i) > 2 else 0 for i in bread_amount
                 ]
 
-                if bread_amount[0] > 0 and sum(bread_amount[1:11]) < 12:
+                if bread_amount_mode[0] > 0 and sum(bread_amount_mode[1:11]) < 12:
                     self.send_data(
                         tray_id=tray_id,
-                        bread_amount=bread_amount,
+                        bread_amount=bread_amount_mode,
                         detected_time=detected_time,
                     )
                     tray_id += 1
@@ -140,17 +141,18 @@ class VideoProcesser:
             for i in range(len(unq)):
                 bread_amount[unq[i]].append(counts[i])
 
-        # if 10 frames were sequentially covered then count most frequent value of bread counted
+        # if 10 frames were sequentially covered
+        # then count most frequent value of bread counted
         elif is_covered == 11:
-            bread_amount = [
+            bread_amount_mode = [
                 int(st.mode(i).mode) if len(i) > 2 else 0 for i in bread_amount
             ]
 
             # if basket was detected, then send data to db
-            if bread_amount[0] > 0 and sum(bread_amount[1:11]) < 12:
+            if bread_amount_mode[0] > 0 and sum(bread_amount_mode[1:11]) < 12:
                 self.send_data(
                     tray_id=tray_id,
-                    bread_amount=bread_amount,
+                    bread_amount=bread_amount_mode,
                     detected_time=detected_time,
                 )
                 tray_id += 1
@@ -158,8 +160,8 @@ class VideoProcesser:
         return is_covered, bread_amount, tray_id
 
     def cut_grayscale_roi(
-        self, x1: int, y1: int, x2: int, y2: int, roi: np.ndarray[Any]
-    ) -> np.ndarray[Any]:
+        self, x1: int, y1: int, x2: int, y2: int, roi: np.ndarray
+    ) -> np.ndarray:
         """
         Cut roi to specified dimentions and get image filtered
         :param x1: left-top x-coordinate
@@ -182,12 +184,12 @@ class VideoProcesser:
 
     def process_video(
         self,
-        model: any,
-        cap: any,
+        model: YOLO,
+        cap: cv2.VideoCapture,
         ms_per_frame: float,
         detected_time: datetime,
-        is_covered: any,
-        bread_amount: any,
+        is_covered: int,
+        bread_amount: list,
         tray_id: int,
     ) -> int:
         """
@@ -250,7 +252,7 @@ class VideoProcesser:
 
         return tray_id
 
-    def run(self, model, tray_id: int) -> None:
+    def run(self, model: YOLO, tray_id: int) -> None:
         """
         Get videofile name and remove processed videos.
 
@@ -258,7 +260,7 @@ class VideoProcesser:
         :param tray_id:
         """
         is_covered = 0
-        bread_amount = [[], [], [], [], [], [], [], [], [], [], [], []]
+        bread_amount: list[list[int]] = [[], [], [], [], [], [], [], [], [], [], [], []]
 
         logger.info("Получаем видео")
         while True:
@@ -273,7 +275,9 @@ class VideoProcesser:
             else:
                 continue
 
-            detected_time = datetime.strptime(video, f"%Y-%m-%dT%H-%M-%S.{video[-3:]}")
+            detected_time = datetime.strptime(
+                str(video), f"%Y-%m-%dT%H-%M-%S.{video[-3:]}"
+            )
             if (
                 datetime.now() - timedelta(seconds=self.config.video_length_s)
                 <= detected_time
@@ -303,7 +307,7 @@ class VideoProcesser:
             os.remove(f"{self.config.video_path}/{video}")
             logger.info(f"File {self.config.video_path}/{video} has been removed")
 
-    def start_model(self):
+    def start_model(self) -> None:
         """
         Initialize model and start video processing.
         """
@@ -314,7 +318,7 @@ class VideoProcesser:
         self.helpers.add_default_product()
 
         logger.info("Получаем первичные данные для работы")
-        tray_id, last_change_sku, last_change_sku_time = get_start_data()
+        tray_id, last_change_sku, last_change_sku_time = self.crud.get_start_data()
 
         content = {
             "last_change_sku": last_change_sku,

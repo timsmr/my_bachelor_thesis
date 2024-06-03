@@ -1,4 +1,4 @@
-from database.crud import add_product
+from database.crud import Crud
 
 
 class Helpers:
@@ -6,8 +6,10 @@ class Helpers:
     Helper functions.
     """
 
-    @staticmethod
-    def add_default_product() -> None:
+    def __init__(self) -> None:
+        self.crud = Crud()
+
+    def add_default_product(self) -> None:
         """
         Add default product data to the DB.
         """
@@ -65,4 +67,4 @@ class Helpers:
         ]
 
         for product in products:
-            add_product(product["name"], product["sku"], product["id"])
+            self.crud.add_product(product["name"], product["sku"], product["id"])

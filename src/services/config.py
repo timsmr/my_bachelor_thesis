@@ -16,7 +16,3 @@ class Config(BaseSettings):
     video_length_s: int = Field(300, env="VIDEO_LENGTH_S")
 
     rtsp_url: str = Field(..., env="RTSP_URL")
-
-    class Config:
-        env_file = "./.env"
-        extra = "allow"
