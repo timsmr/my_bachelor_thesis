@@ -10,7 +10,3 @@ class DBConfig(BaseSettings):
     db_username: str = Field("postgres", env="DB_USERNAME")
     db_port: int = Field(5432, env="DB_PORT")
     db_host: str = Field("postgres", env="DB_HOST")
-
-    class Config:
-        env_file = "./.env"
-        extra = "allow"
